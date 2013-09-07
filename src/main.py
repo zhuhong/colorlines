@@ -156,10 +156,10 @@ class ColorGame():
 
 def main():
     game=ColorGame()
-    game.Draw_bolls()
     game.Draw_score()
     game.Draw_label()
     game.Draw_nextcolors()
+    game.Draw_bolls()
 
     while True: 
         events=pygame.event.get()
