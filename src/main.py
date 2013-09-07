@@ -8,6 +8,7 @@ from Matrix import Matrix
 HIGHLIGHTCOLOR = (255, 0, 255) # color of the selected gem's border
 BGCOLOR = (170, 190, 255) # background color on the screen
 GRIDCOLOR = (0, 0, 255) # color of the game board
+CHOOSECOLOR = (200,0,0) #c color of the choosing grid
 GAMEOVERCOLOR = (255, 100, 100) # color of the "Game over" text.
 GAMEOVERBGCOLOR = (0, 0, 0) # background color of the "Game over" text.
 SCORECOLOR = (85, 65, 0)
@@ -60,7 +61,7 @@ class ColorGame():
         # for i in range(trace.shape[1]-1):
         for i in range(trace.shape[1]):
             if NOW_X == NEXT_X:
-                for j in range(0,64,8):
+                for j in range(0,64,4):
                     DT=(NEXT_Y-NOW_Y)
                     self.WINDOWSURF.blit(boll,[NOW_X*GRIDSIZE+14,NOW_Y*GRIDSIZE+14+(j+1)*DT])
                     pygame.display.update()
@@ -69,7 +70,7 @@ class ColorGame():
                     self.WINDOWSURF.blit(self.bg.subsurface(rect),[NOW_X*GRIDSIZE+13,NOW_Y*GRIDSIZE+13+(j+1)*DT])
                     # FPSCLOCK.tick(60)
             elif NOW_Y == NEXT_Y:
-                for j in range(0,64,8):
+                for j in range(0,64,4):
                     DT=(NEXT_X-NOW_X)
                     self.WINDOWSURF.blit(boll,[NOW_X*GRIDSIZE+14+(j+1)*DT,NOW_Y*GRIDSIZE+14])
                     pygame.display.update()
@@ -84,21 +85,25 @@ class ColorGame():
             except:
                 pass
 
-    # def Boll_jump(WINDOWSURF,GEMIMAGES,color,X,Y):
-    #     START=0
-    #     while True:
-    #         rect=(X*64+13,Y*64+13,56,56)
-    #         WINDOWSURF.blit(bg.subsurface(rect),[X*64+13,Y*64+13])
-    #         pygame.display.update()
-    #         temp=int(abs(25*math.cos(START/25.0*math.pi)))
-    #         im_temp=pygame.transform.smoothscale(GEMIMAGES[color-1], (50,25+temp))
-    #         WINDOWSURF.blit(im_temp,(X*64+14,Y*64+14-temp))
-    #         pygame.display.update()
-    #         START=START+1
+    def highlight_boll(self,X,Y):
+        # rect=(X*64+13,Y*64+13,56,56)
+        pygame.draw.line(self.WINDOWSURF,CHOOSECOLOR,[X*64+14,Y*64+14],[X*64+14,Y*64+74],4)
+        pygame.draw.line(self.WINDOWSURF,CHOOSECOLOR,[X*64+14,Y*64+14],[X*64+74,Y*64+14],4)
+        pygame.draw.line(self.WINDOWSURF,CHOOSECOLOR,[X*64+74,Y*64+14],[X*64+74,Y*64+74],4)
+        pygame.draw.line(self.WINDOWSURF,CHOOSECOLOR,[X*64+14,Y*64+74],[X*64+74,Y*64+74],4)
+        # WINDOWSURF.blit(bg.subsurface(rect),[X*64+13,Y*64+13])
+        pygame.display.update()
+
+    def dis_highlight_boll(self,X,Y):
+        rect=(X*GRIDSIZE+13,Y*64+13,64,64)
+        self.WINDOWSURF.blit(self.bg.subsurface(rect),[X*GRIDSIZE+13,Y*GRIDSIZE+13])
+        color=self.matrix.Main_matrix[X,Y]
+        self.WINDOWSURF.blit(self.GEMIMAGES[color-1],[14+X*GRIDSIZE,14+Y*GRIDSIZE])
+        pygame.display.update()
 
     def Boll_appear(self,new_bolls):
         #appear 3 bolls in the same time.
-        for i in range(0,58,2):
+        for i in range(0,58,1):
             for j in range(3):
                 rect=(new_bolls[j][0]*GRIDSIZE+13,new_bolls[j][1]*GRIDSIZE+13,56,56)
                 self.WINDOWSURF.blit(self.bg.subsurface(rect),[new_bolls[j][0]*GRIDSIZE+13,new_bolls[j][1]*GRIDSIZE+13])
@@ -110,7 +115,7 @@ class ColorGame():
 
     def Boll_disappear(self,new_bolls):
         #disappear bolls in the same time.
-        for i in range(48,0,-2):
+        for i in range(48,0,-1):
             for j in range(len(new_bolls)):
                 rect=(new_bolls[j][0]*GRIDSIZE+13,new_bolls[j][1]*GRIDSIZE+13,56,56)
                 self.WINDOWSURF.blit(self.bg.subsurface(rect),[new_bolls[j][0]*GRIDSIZE+13,new_bolls[j][1]*GRIDSIZE+13])
@@ -170,10 +175,13 @@ def main():
                     if x>8 or y> 8:
                         break
                     if game.matrix.Main_matrix[x,y]!=0:
+                        if game.FIRST_CLICK == True:
+                            game.dis_highlight_boll(game.X1,game.Y1)
                         game.FIRST_CLICK=True
                         game.X1=x
                         game.Y1=y
 #                       print x,y
+                        game.highlight_boll(game.X1,game.Y1)
                     if game.matrix.Main_matrix[x,y]==0 and game.FIRST_CLICK==True: 
                         game.SECOND_CLICK=True
                         game.X2=x
@@ -225,7 +233,7 @@ def main():
                 pass
 #            print event 
 
-        game.FPSCLOCK.tick(30)
+        game.FPSCLOCK.tick(15)
 
 
 if __name__=="__main__":
